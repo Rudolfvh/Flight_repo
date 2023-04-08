@@ -2,8 +2,6 @@ package org.example;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.Arrays;
 
 public class JdbcRunner {
 
