@@ -6,10 +6,10 @@ import java.sql.*;
 public class JdbcRunner {
 
     private static String countNameSql = """
-            SELECT t.passenger_name,
+            SELECT split_part(t.passenger_name,' ',1),
             count(split_part(t.passenger_name,' ',1))
             from ticket t
-            group by t.passenger_name order by count(*) desc;
+            group by split_part(t.passenger_name,' ',1) order by count(*) desc;
             """;
 
     private static String countTicketSql = """
@@ -68,7 +68,7 @@ public class JdbcRunner {
         try (Connection connection = ConnectionManager.open();
              Statement statement = connection.createStatement()) {
 
-            ResultSet result = statement.executeQuery(countNameSql);
+            ResultSet result = statement.executeQuery(countTicketSql);
 
             while (result.next()) {
                 System.out.println(result.getString("passenger_name"));
@@ -83,10 +83,10 @@ public class JdbcRunner {
         try (Connection connection = ConnectionManager.open();
              var statement = connection.createStatement()) {
 
-            ResultSet result = statement.executeQuery(countTicketSql);
+            ResultSet result = statement.executeQuery(countNameSql);
 
             while (result.next()) {
-                System.out.println(result.getString("passenger_name"));
+                System.out.println(result.getString("split_part"));
                 System.out.println(result.getBigDecimal("count"));
                 System.out.println("------------------");
             }
