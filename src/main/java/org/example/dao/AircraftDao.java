@@ -1,8 +1,6 @@
 package org.example.dao;
 
-import org.example.ConnectionManager;
 import org.example.entity.Aircraft;
-import org.example.entity.Airport;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

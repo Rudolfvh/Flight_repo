@@ -1,9 +1,7 @@
 package org.example.dao;
 
-import org.example.ConnectionManager;
 import org.example.entity.Flight;
 import org.example.entity.FlightStatus;
-import org.example.entity.Ticket;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

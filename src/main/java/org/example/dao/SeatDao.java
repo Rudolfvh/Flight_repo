@@ -1,14 +1,10 @@
 package org.example.dao;
 
-import org.example.ConnectionManager;
-import org.example.entity.Flight;
-import org.example.entity.FlightStatus;
 import org.example.entity.Seat;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

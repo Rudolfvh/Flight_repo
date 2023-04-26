@@ -4,7 +4,6 @@ import org.example.dto.TicketFilter;
 import org.example.entity.Flight;
 import org.example.entity.FlightStatus;
 import org.example.entity.Ticket;
-import org.example.ConnectionManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
