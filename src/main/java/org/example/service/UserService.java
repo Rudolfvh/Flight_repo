@@ -1,12 +1,12 @@
 package org.example.service;
 
-import by.itacademy.jdbc.starter.dao.UserDao;
-import by.itacademy.jdbc.starter.dto.CreateUserDto;
-import by.itacademy.jdbc.starter.dto.UserDto;
-import by.itacademy.jdbc.starter.exception.ValidationException;
-import by.itacademy.jdbc.starter.mapper.CreateUserMapper;
-import by.itacademy.jdbc.starter.mapper.UserMapper;
-import by.itacademy.jdbc.starter.validator.CreateUserValidator;
+import org.example.dao.UserDao;
+import org.example.dto.CreateUserDto;
+import org.example.dto.UserDto;
+import org.example.exception.ValidationException;
+import org.example.mapper.CreateUserMapper;
+import org.example.mapper.UserMapper;
+import org.example.validator.CreateUserValidator;
 import lombok.NoArgsConstructor;
 
 import java.util.Optional;
@@ -22,10 +22,10 @@ public class UserService {
     private final CreateUserMapper createUserMapper = CreateUserMapper.getInstance();
     private final UserMapper userMapper = UserMapper.getInstance();
 
-    public Optional<UserDto> login(String email, String password) {
-        return userDao.findByEmailAndPassword(email, password)
-                .map(userMapper::mapFrom);
-    }
+//    public Optional<UserDto> login(String email, String password) {
+//        return userDao.findByEmailAndPassword(email, password)
+//                .map(userMapper::mapFrom);
+//    }
 
     public Integer create(CreateUserDto userDto) {
         var validationResult = createUserValidator.isValid(userDto);

@@ -2,6 +2,10 @@ package org.example.dao;
 
 import org.example.entity.Flight;
 import org.example.entity.FlightStatus;
+import org.example.entity.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,99 +59,85 @@ public class FlightDao implements Dao<Long, Flight>{
 
     @Override
     public boolean delete(Long id) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(DELETE_SQL)) {
-            statement.setLong(1, id);
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
-        }
-    }
-
-    @Override
-    public Optional<Flight> findById(Long id) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(FIND_BY_ID)) {
-            Flight flight = null;
-            statement.setLong(1, id);
-            var result = statement.executeQuery();
-            if (result.next())
-                flight = buildFlight(result);
-            return Optional.ofNullable(flight);
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.delete(session.get(Flight.class,id));
+            return true;
         }
     }
 
     @Override
     public boolean update(Flight flight) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(UPDATE_SQL)) {
-            statement.setString(1, flight.getFlightNo());
-            statement.setTimestamp(2, Timestamp.valueOf(flight.getDepartureDate()));
-            statement.setString(3, flight.getDepartureAirportCode());
-            statement.setTimestamp(4, Timestamp.valueOf(flight.getArrivalDate()));
-            statement.setString(5, flight.getArrivalAirportCode());
-            statement.setLong(6, flight.getAircraftId());
-            statement.setObject(7,flight.getStatus());
-            statement.setLong(8,flight.getId());
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.update(flight);
+            session.beginTransaction().commit();
+            return true;
         }
-    }
-
-
-    @Override
-    public List<Flight> findAll() {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(FIND_ALL)) {
-            List<Flight> flights = new ArrayList<>();
-            var result = statement.executeQuery();
-            while (result.next())
-                flights.add(buildFlight(result));
-
-            return flights;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
-        }
-    }
-
-    private Flight buildFlight(ResultSet result) throws SQLException {
-        return new Flight(
-                result.getLong("id"),
-                result.getString("flight_no"),
-                result.getTimestamp("departure_date").toLocalDateTime(),
-                result.getString("departure_airport_code"),
-                result.getTimestamp("arrival_date").toLocalDateTime(),
-                result.getString("arrival_airport_code"),
-                result.getInt("aircraft_id"),
-                FlightStatus.valueOf(result.getString("status"))
-        );
     }
 
     @Override
     public Flight save(Flight flight) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection
-                     .prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, flight.getFlightNo());
-            statement.setTimestamp(2, Timestamp.valueOf(flight.getDepartureDate()));
-            statement.setString(3, flight.getDepartureAirportCode());
-            statement.setTimestamp(4, Timestamp.valueOf(flight.getArrivalDate()));
-            statement.setString(5, flight.getArrivalAirportCode());
-            statement.setLong(6, flight.getAircraftId());
-            statement.setObject(7,flight.getStatus());
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.save(flight);
+            session.beginTransaction().commit();
 
-            statement.executeUpdate();
-            var generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next())
-                flight.setId(generatedKeys.getLong("id"));
             return flight;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
         }
     }
+
+//    @Override
+//    public Optional<Flight> findById(Long id) {
+//        try (var connection = ConnectionManager.get();
+//             var statement = connection.prepareStatement(FIND_BY_ID)) {
+//            Flight flight = null;
+//            statement.setLong(1, id);
+//            var result = statement.executeQuery();
+//            if (result.next())
+//                flight = buildFlight(result);
+//            return Optional.ofNullable(flight);
+//        } catch (SQLException e) {
+//            throw new DaoExeption(e);
+//        }
+//    }
+
+//    @Override
+//    public List<Flight> findAll() {
+//        try (var connection = ConnectionManager.get();
+//             var statement = connection.prepareStatement(FIND_ALL)) {
+//            List<Flight> flights = new ArrayList<>();
+//            var result = statement.executeQuery();
+//            while (result.next())
+//                flights.add(buildFlight(result));
+//
+//            return flights;
+//        } catch (SQLException e) {
+//            throw new DaoExeption(e);
+//        }
+//    }
+//
+//    private Flight buildFlight(ResultSet result) throws SQLException {
+//        return new Flight(
+//                result.getLong("id"),
+//                result.getString("flight_no"),
+//                result.getTimestamp("departure_date").toLocalDateTime(),
+//                result.getString("departure_airport_code"),
+//                result.getTimestamp("arrival_date").toLocalDateTime(),
+//                result.getString("arrival_airport_code"),
+//                result.getInt("aircraft_id"),
+//                FlightStatus.valueOf(result.getString("status"))
+//        );
+//    }
 
     public static FlightDao getInstance(){
         return INSTANCE;

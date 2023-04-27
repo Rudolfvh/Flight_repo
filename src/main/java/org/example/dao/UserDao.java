@@ -3,10 +3,11 @@ package org.example.dao;
 import org.example.entity.Gender;
 import org.example.entity.Role;
 import org.example.entity.User;
-import org.example.utils.ConnectionManager;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -28,52 +29,45 @@ public class UserDao implements Dao<Integer, User> {
             "SELECT * FROM users WHERE email = ? AND password = ?";
 
 
-    @SneakyThrows
-    public Optional<User> findByEmailAndPassword(String email, String password) {
-        try (var connection = ConnectionManager.get();
-             var preparedStatement = connection.prepareStatement(GET_BY_EMAIL_AND_PASSWORD_SQL)) {
-            preparedStatement.setString(1, email);
-            preparedStatement.setString(2, password);
+//    @SneakyThrows
+//    public Optional<User> findByEmailAndPassword(String email, String password) {
+//        try (var connection = ConnectionManager.get();
+//             var preparedStatement = connection.prepareStatement(GET_BY_EMAIL_AND_PASSWORD_SQL)) {
+//            preparedStatement.setString(1, email);
+//            preparedStatement.setString(2, password);
+//
+//            var resultSet = preparedStatement.executeQuery();
+//            User user = null;
+//            if (resultSet.next()) {
+//                user = buildEntity(resultSet);
+//            }
+//            return Optional.ofNullable(user);
+//        }
+//    }
 
-            var resultSet = preparedStatement.executeQuery();
-            User user = null;
-            if (resultSet.next()) {
-                user = buildEntity(resultSet);
-            }
-            return Optional.ofNullable(user);
-        }
-    }
 
-
-    private User buildEntity(ResultSet resultSet) throws java.sql.SQLException {
-        return User.builder()
-                .id(resultSet.getObject("id", Integer.class))
-                .name(resultSet.getObject("name", String.class))
-                .birthday(resultSet.getObject("birthday", Date.class).toLocalDate())
-                .email(resultSet.getObject("email", String.class))
-                .password(resultSet.getObject("password", String.class))
-                .role(Role.find(resultSet.getObject("role", String.class)).orElse(null))
-                .gender(Gender.valueOf(resultSet.getObject("gender", String.class)))
-                .build();
-    }
+//    private User buildEntity(ResultSet resultSet) throws java.sql.SQLException {
+//        return User.builder()
+//                .id(resultSet.getObject("id", Integer.class))
+//                .name(resultSet.getObject("name", String.class))
+//                .birthday(resultSet.getObject("birthday", Date.class).toLocalDate())
+//                .email(resultSet.getObject("email", String.class))
+//                .password(resultSet.getObject("password", String.class))
+//                .role(Role.find(resultSet.getObject("role", String.class)).orElse(null))
+//                .gender(Gender.valueOf(resultSet.getObject("gender", String.class)))
+//                .build();
+//    }
 
     @Override
     @SneakyThrows
     public User save(User entity) {
-        try (Session session);
-             var preparedStatement = connection.prepareStatement(SAVE_SQL, RETURN_GENERATED_KEYS)) {
-            preparedStatement.setObject(1, entity.getName());
-            preparedStatement.setObject(2, entity.getBirthday());
-            preparedStatement.setObject(3, entity.getEmail());
-            preparedStatement.setObject(4, entity.getPassword());
-            preparedStatement.setObject(5, entity.getRole().name());
-            preparedStatement.setObject(6, entity.getGender().name());
-
-            preparedStatement.executeUpdate();
-
-            var generatedKeys = preparedStatement.getGeneratedKeys();
-            generatedKeys.next();
-            entity.setId(generatedKeys.getObject("id", Integer.class));
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.save(entity);
+            session.beginTransaction().commit();
 
             return entity;
         }

@@ -1,7 +1,7 @@
 package org.example.dto;
 
-import by.itacademy.jdbc.starter.entity.Gender;
-import by.itacademy.jdbc.starter.entity.Role;
+import org.example.entity.Gender;
+import org.example.entity.Role;
 import lombok.Builder;
 import lombok.Value;
 

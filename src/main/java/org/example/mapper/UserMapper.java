@@ -1,7 +1,7 @@
 package org.example.mapper;
 
-import by.itacademy.jdbc.starter.dto.UserDto;
-import by.itacademy.jdbc.starter.entity.User;
+import org.example.dto.UserDto;
+import org.example.entity.User;
 import lombok.NoArgsConstructor;
 
 import static lombok.AccessLevel.PRIVATE;

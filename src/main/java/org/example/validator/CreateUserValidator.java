@@ -1,9 +1,9 @@
 package org.example.validator;
 
-import by.itacademy.jdbc.starter.dto.CreateUserDto;
-import by.itacademy.jdbc.starter.entity.Gender;
-import by.itacademy.jdbc.starter.entity.Role;
-import by.itacademy.jdbc.starter.utils.LocalDateFormatter;
+import org.example.dto.CreateUserDto;
+import org.example.entity.Gender;
+import org.example.entity.Role;
+import org.example.utils.LocalDateFormatter;
 import lombok.NoArgsConstructor;
 
 import static lombok.AccessLevel.PRIVATE;

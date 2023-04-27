@@ -4,6 +4,10 @@ import org.example.dto.TicketFilter;
 import org.example.entity.Flight;
 import org.example.entity.FlightStatus;
 import org.example.entity.Ticket;
+import org.example.entity.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -58,137 +62,130 @@ public class TicketDao implements Dao<Long,Ticket>{
             WHERE t.id = ?
             """;
 
+    @Override
     public boolean update(Ticket ticket) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(UPDATE_SQL)) {
-            statement.setString(1, ticket.getPassport_no());
-            statement.setString(2, ticket.getPassenger_name());
-            statement.setLong(3, ticket.getFlight().getId());
-            statement.setString(4, ticket.getSeat_no());
-            statement.setBigDecimal(5, ticket.getCost());
-            statement.setLong(6, ticket.getId());
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.update(ticket);
+            session.beginTransaction().commit();
+            return true;
         }
     }
 
-    public Optional<Ticket> findById(Long id) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(FIND_BY_ID)) {
-            Ticket ticket = null;
-            statement.setLong(1, id);
-            var result = statement.executeQuery();
-            if (result.next())
-                ticket = buildTicket(result);
-            return Optional.ofNullable(ticket);
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
-        }
-    }
-
-    private Ticket buildTicket(ResultSet result) throws SQLException {
-        var flight = new Flight(
-                result.getLong("flight_id"),
-                result.getString("flight_no"),
-                result.getTimestamp("departure_date").toLocalDateTime(),
-                result.getString("departure_airport_code"),
-                result.getTimestamp("arrival_date").toLocalDateTime(),
-                result.getString("arrival_airport_code"),
-                result.getInt("aircraft_id"),
-                FlightStatus.valueOf(result.getString("status"))
-        );
-        return new Ticket(
-                result.getLong("id"),
-                result.getString("passport_no"),
-                result.getString("passenger_name"),
-                flight,
-                result.getString("seat_no"),
-                result.getBigDecimal("cost")
-        );
-    }
-
-    public List<Ticket> findAll() {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(FIND_ALL)) {
-            List<Ticket> tickets = new ArrayList<>();
-            var result = statement.executeQuery();
-            while (result.next())
-                tickets.add(buildTicket(result));
-
-            return tickets;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
-        }
-    }
-
-    public List<Ticket> findAll(TicketFilter filter) {
-        List<Object> parameters = new ArrayList<>();
-        List<String> whereSql = new ArrayList<>();
-        if (filter.seatNo() != null) {
-            whereSql.add("seat_no like ?");
-            parameters.add("%" +filter.seatNo()+"%");
-        }
-        if (filter.passengerName() != null) {
-            whereSql.add("passenger_name = ?");
-            parameters.add(filter.passengerName());
-        }
-        parameters.add(filter.limit());
-        parameters.add(filter.offset());
-
-        var where = whereSql.stream().collect(Collectors.joining(
-                " AND ",
-                parameters.size() > 2 ? " WHERE " : " ",
-                " LIMIT ? OFFSET ?"
-        ));
-        String sql = FIND_ALL + where;
-
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(sql)) {
-            List<Ticket> tickets = new ArrayList<>();
-            for (int i = 0; i < parameters.size(); i++) {
-                statement.setObject(i + 1, parameters.get(i));
-            }
-            System.out.println(statement);
-            var result = statement.executeQuery();
-            while (result.next())
-                tickets.add(buildTicket(result));
-
-            return tickets;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
-        }
-    }
-
+    @Override
     public boolean delete(Long id) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(DELETE_SQL)) {
-            statement.setLong(1, id);
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.delete(session.get(Ticket.class,id));
+            return true;
         }
     }
 
+    @Override
     public Ticket save(Ticket ticket) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection
-                     .prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, ticket.getPassport_no());
-            statement.setString(2, ticket.getPassenger_name());
-            statement.setLong(3, ticket.getFlight().getId());
-            statement.setString(4, ticket.getSeat_no());
-            statement.setBigDecimal(5, ticket.getCost());
-
-            statement.executeUpdate();
-            var generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next())
-                ticket.setId(generatedKeys.getLong("id"));
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.save(ticket);
+            session.beginTransaction().commit();
             return ticket;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
         }
     }
+
+//    public Optional<Ticket> findById(Long id) {
+//        try (var connection = ConnectionManager.get();
+//             var statement = connection.prepareStatement(FIND_BY_ID)) {
+//            Ticket ticket = null;
+//            statement.setLong(1, id);
+//            var result = statement.executeQuery();
+//            if (result.next())
+//                ticket = buildTicket(result);
+//            return Optional.ofNullable(ticket);
+//        } catch (SQLException e) {
+//            throw new DaoExeption(e);
+//        }
+//    }
+
+//    private Ticket buildTicket(ResultSet result) throws SQLException {
+//        var flight = new Flight(
+//                result.getLong("flight_id"),
+//                result.getString("flight_no"),
+//                result.getTimestamp("departure_date").toLocalDateTime(),
+//                result.getString("departure_airport_code"),
+//                result.getTimestamp("arrival_date").toLocalDateTime(),
+//                result.getString("arrival_airport_code"),
+//                result.getInt("aircraft_id"),
+//                FlightStatus.valueOf(result.getString("status"))
+//        );
+//        return new Ticket(
+//                result.getLong("id"),
+//                result.getString("passport_no"),
+//                result.getString("passenger_name"),
+//                flight,
+//                result.getString("seat_no"),
+//                result.getBigDecimal("cost")
+//        );
+//    }
+
+//    public List<Ticket> findAll() {
+//        try (var connection = ConnectionManager.get();
+//             var statement = connection.prepareStatement(FIND_ALL)) {
+//            List<Ticket> tickets = new ArrayList<>();
+//            var result = statement.executeQuery();
+//            while (result.next())
+//                tickets.add(buildTicket(result));
+//
+//            return tickets;
+//        } catch (SQLException e) {
+//            throw new DaoExeption(e);
+//        }
+//    }
+
+//    public List<Ticket> findAll(TicketFilter filter) {
+//        List<Object> parameters = new ArrayList<>();
+//        List<String> whereSql = new ArrayList<>();
+//        if (filter.seatNo() != null) {
+//            whereSql.add("seat_no like ?");
+//            parameters.add("%" +filter.seatNo()+"%");
+//        }
+//        if (filter.passengerName() != null) {
+//            whereSql.add("passenger_name = ?");
+//            parameters.add(filter.passengerName());
+//        }
+//        parameters.add(filter.limit());
+//        parameters.add(filter.offset());
+//
+//        var where = whereSql.stream().collect(Collectors.joining(
+//                " AND ",
+//                parameters.size() > 2 ? " WHERE " : " ",
+//                " LIMIT ? OFFSET ?"
+//        ));
+//        String sql = FIND_ALL + where;
+//
+//        try (var connection = ConnectionManager.get();
+//             var statement = connection.prepareStatement(sql)) {
+//            List<Ticket> tickets = new ArrayList<>();
+//            for (int i = 0; i < parameters.size(); i++) {
+//                statement.setObject(i + 1, parameters.get(i));
+//            }
+//            System.out.println(statement);
+//            var result = statement.executeQuery();
+//            while (result.next())
+//                tickets.add(buildTicket(result));
+//
+//            return tickets;
+//        } catch (SQLException e) {
+//            throw new DaoExeption(e);
+//        }
+//    }
 
     public static TicketDao getInstance() {
         return INSTANCE;

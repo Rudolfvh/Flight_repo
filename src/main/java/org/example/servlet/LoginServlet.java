@@ -1,8 +1,8 @@
 package org.example.servlet;
 
-import by.itacademy.jdbc.starter.dto.UserDto;
-import by.itacademy.jdbc.starter.service.UserService;
-import by.itacademy.jdbc.starter.utils.JspHelper;
+import org.example.dto.UserDto;
+import org.example.service.UserService;
+import org.example.utils.JspHelper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,7 +12,7 @@ import lombok.SneakyThrows;
 
 import java.io.IOException;
 
-import static by.itacademy.jdbc.starter.utils.UrlPath.LOGIN;
+import static org.example.utils.UrlPath.LOGIN;
 
 @WebServlet(LOGIN)
 public class LoginServlet extends HttpServlet {

@@ -1,6 +1,10 @@
 package org.example.dao;
 
 import org.example.entity.Airport;
+import org.example.entity.Ticket;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,81 +45,78 @@ public class AirportDao implements Dao<String, Airport>{
             """;
     @Override
     public boolean delete(String id) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(DELETE_SQL)) {
-            statement.setString(1, id);
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
-        }
-    }
-
-    @Override
-    public Optional<Airport> findById(String id) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(FIND_BY_ID)) {
-            Airport airport = null;
-            statement.setString(1, id);
-            var result = statement.executeQuery();
-            if (result.next())
-                airport = buildAirport(result);
-            return Optional.ofNullable(airport);
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.delete(session.get(Airport.class,id));
+            return true;
         }
     }
 
     @Override
     public boolean update(Airport airport) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(UPDATE_SQL)) {
-            statement.setString(1,airport.getCountry());
-            statement.setString(2,airport.getCity());
-            statement.setString(3,airport.getCode());
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.update(airport);
+            session.beginTransaction().commit();
+            return true;
         }
-    }
-
-    @Override
-    public List<Airport> findAll() {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(FIND_ALL)) {
-            List<Airport> airports = new ArrayList<>();
-            var result = statement.executeQuery();
-            while (result.next())
-                airports.add(buildAirport(result));
-
-            return airports;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
-        }
-    }
-
-    private Airport buildAirport(ResultSet result) throws SQLException {
-        return new Airport(result.getString("code"),
-                result.getString("country"),
-                result.getString("city")
-        );
     }
 
     @Override
     public Airport save(Airport airport) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection
-                     .prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1,airport.getCode());
-            statement.setString(2,airport.getCountry());
-            statement.setString(3,airport.getCity());
-
-            statement.executeUpdate();
-
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.save(airport);
+            session.beginTransaction().commit();
             return airport;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
         }
     }
+
+//    @Override
+//    public Optional<Airport> findById(String id) {
+//        try (var connection = ConnectionManager.get();
+//             var statement = connection.prepareStatement(FIND_BY_ID)) {
+//            Airport airport = null;
+//            statement.setString(1, id);
+//            var result = statement.executeQuery();
+//            if (result.next())
+//                airport = buildAirport(result);
+//            return Optional.ofNullable(airport);
+//        } catch (SQLException e) {
+//            throw new DaoExeption(e);
+//        }
+//    }
+
+//    @Override
+//    public List<Airport> findAll() {
+//        try (var connection = ConnectionManager.get();
+//             var statement = connection.prepareStatement(FIND_ALL)) {
+//            List<Airport> airports = new ArrayList<>();
+//            var result = statement.executeQuery();
+//            while (result.next())
+//                airports.add(buildAirport(result));
+//
+//            return airports;
+//        } catch (SQLException e) {
+//            throw new DaoExeption(e);
+//        }
+//    }
+
+//    private Airport buildAirport(ResultSet result) throws SQLException {
+//        return new Airport(result.getString("code"),
+//                result.getString("country"),
+//                result.getString("city")
+//        );
+//    }
 
     public static AirportDao getInstance(){
         return INSTANCE;

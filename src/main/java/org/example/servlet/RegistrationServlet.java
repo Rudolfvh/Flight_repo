@@ -1,12 +1,12 @@
 package org.example.servlet;
 
-import by.itacademy.jdbc.starter.dto.CreateUserDto;
-import by.itacademy.jdbc.starter.entity.Gender;
-import by.itacademy.jdbc.starter.entity.Role;
-import by.itacademy.jdbc.starter.exception.ValidationException;
-import by.itacademy.jdbc.starter.service.UserService;
-import by.itacademy.jdbc.starter.utils.JspHelper;
-import by.itacademy.jdbc.starter.utils.UrlPath;
+import org.example.dto.CreateUserDto;
+import org.example.entity.Gender;
+import org.example.entity.Role;
+import org.example.exception.ValidationException;
+import org.example.service.UserService;
+import org.example.utils.JspHelper;
+import org.example.utils.UrlPath;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static by.itacademy.jdbc.starter.utils.UrlPath.REGISTRATION;
+import static org.example.utils.UrlPath.REGISTRATION;
 
 @WebServlet(REGISTRATION)
 public class RegistrationServlet extends HttpServlet {

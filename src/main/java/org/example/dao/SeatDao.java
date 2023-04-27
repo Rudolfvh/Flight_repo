@@ -1,6 +1,10 @@
 package org.example.dao;
 
 import org.example.entity.Seat;
+import org.example.entity.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,71 +38,76 @@ public class SeatDao implements Dao<Long, Seat>{
 
     @Override
     public boolean delete(Long id) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(DELETE_SQL)) {
-            statement.setLong(1, id);
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.delete(session.get(User.class,id));
+            return true;
         }
     }
 
     @Override
-    public Optional<Seat> findById(Long id) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(FIND_BY_ID)) {
-            Seat seat = null;
-            statement.setLong(1, id);
-            var result = statement.executeQuery();
-            if (result.next())
-                seat = buildSeat(result);
-            return Optional.ofNullable(seat);
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
+    public Seat save(Seat seat) {
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.save(seat);
+            session.beginTransaction().commit();
+            return seat;
         }
     }
 
     @Override
     public boolean update(Seat seat) {
-       return false;
-    }
-
-
-    @Override
-    public List<Seat> findAll() {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(FIND_ALL)) {
-            List<Seat> seats = new ArrayList<>();
-            var result = statement.executeQuery();
-            while (result.next())
-                seats.add(buildSeat(result));
-
-            return seats;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.update(seat);
+            session.beginTransaction().commit();
+            return true;
         }
     }
+//    @Override
+//    public Optional<Seat> findById(Long id) {
+//        try (var connection = ConnectionManager.get();
+//             var statement = connection.prepareStatement(FIND_BY_ID)) {
+//            Seat seat = null;
+//            statement.setLong(1, id);
+//            var result = statement.executeQuery();
+//            if (result.next())
+//                seat = buildSeat(result);
+//            return Optional.ofNullable(seat);
+//        } catch (SQLException e) {
+//            throw new DaoExeption(e);
+//        }
+//    }
 
-    private Seat buildSeat(ResultSet result) throws SQLException {
-        return new Seat(result.getLong("aircraft_id"),
-                result.getString("seat_no")
-        );
-    }
+//    @Override
+//    public List<Seat> findAll() {
+//        try (var connection = ConnectionManager.get();
+//             var statement = connection.prepareStatement(FIND_ALL)) {
+//            List<Seat> seats = new ArrayList<>();
+//            var result = statement.executeQuery();
+//            while (result.next())
+//                seats.add(buildSeat(result));
+//
+//            return seats;
+//        } catch (SQLException e) {
+//            throw new DaoExeption(e);
+//        }
+//    }
 
-    @Override
-    public Seat save(Seat seat) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection
-                     .prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1,seat.getSeatNo());
-
-            statement.executeUpdate();
-
-            return seat;
-        } catch (SQLException e) {
-            throw new DaoExeption(e);
-        }
-    }
+//    private Seat buildSeat(ResultSet result) throws SQLException {
+//        return new Seat(result.getLong("aircraft_id"),
+//                result.getString("seat_no")
+//        );
+//    }
 
     public static SeatDao getInstance(){
         return INSTANCE;
