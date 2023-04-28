@@ -18,25 +18,6 @@ public class SeatDao implements Dao<Long, Seat>{
 
     private static final SeatDao INSTANCE = new SeatDao();
     private static final Configuration configuration = new Configuration();
-    private static String SAVE_SQL = """
-            INSERT INTO seat (seat_no)
-            values (?)
-            """;
-
-    private static String DELETE_SQL = """
-            DELETE FROM seat
-            WHERE aircraft_id = ? and seat_no = ?
-            """;
-
-    private static String FIND_ALL = """
-            SELECT s.aircraft_id,
-            s.seat_no 
-            FROM seat s
-            """;
-
-    private static String FIND_BY_ID = FIND_ALL + """
-            WHERE s.aircraft_id = ? and s.seat_no = ?
-            """;
 
     @Override
     public boolean delete(Long id) {
@@ -79,27 +60,20 @@ public class SeatDao implements Dao<Long, Seat>{
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
             Seat seat = null;
-            session.beginTransaction();
             seat = session.get(Seat.class, id);
-            session.beginTransaction().commit();
             return Optional.ofNullable(seat);
         }
     }
 
-//    @Override
-//    public List<Seat> findAll() {
-//        try (var connection = ConnectionManager.get();
-//             var statement = connection.prepareStatement(FIND_ALL)) {
-//            List<Seat> seats = new ArrayList<>();
-//            var result = statement.executeQuery();
-//            while (result.next())
-//                seats.add(buildSeat(result));
-//
-//            return seats;
-//        } catch (SQLException e) {
-//            throw new DaoExeption(e);
-//        }
-//    }
+    @Override
+    public List<Seat> findAll() {
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            List<Seat> seats = (List<Seat>) session.createQuery("From Seat ").list();
+            return seats;
+        }
+    }
 
 //    private Seat buildSeat(ResultSet result) throws SQLException {
 //        return new Seat(result.getLong("aircraft_id"),

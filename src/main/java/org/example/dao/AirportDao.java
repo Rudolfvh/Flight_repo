@@ -2,6 +2,7 @@ package org.example.dao;
 
 import org.example.entity.Aircraft;
 import org.example.entity.Airport;
+import org.example.entity.Seat;
 import org.example.entity.Ticket;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -58,6 +59,19 @@ public class AirportDao implements Dao<String, Airport>{
     }
 
     @Override
+    public Optional<Airport> findById(String id) {
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            Airport airport = null;
+            session.beginTransaction();
+            airport = session.get(Airport.class, id);
+            session.beginTransaction().commit();
+            return Optional.ofNullable(airport);
+        }
+    }
+
+    @Override
     public boolean update(Airport airport) {
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
@@ -69,6 +83,16 @@ public class AirportDao implements Dao<String, Airport>{
         }
     }
 
+
+    @Override
+    public List<Airport> findAll() {
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            List<Airport> airports = (List<Airport>) session.createQuery("From Airport ").list();
+            return airports;
+        }
+    }
     @Override
     public Airport save(Airport airport) {
         configuration.configure();
@@ -78,19 +102,6 @@ public class AirportDao implements Dao<String, Airport>{
             session.save(airport);
             session.beginTransaction().commit();
             return airport;
-        }
-    }
-
-    @Override
-    public Optional<Airport> findById(Long id) {
-        configuration.configure();
-        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
-             Session session = sessionFactory.openSession()) {
-            Airport airport = null;
-            session.beginTransaction();
-            airport = session.get(Airport.class, id);
-            session.beginTransaction().commit();
-            return Optional.ofNullable(airport);
         }
     }
 

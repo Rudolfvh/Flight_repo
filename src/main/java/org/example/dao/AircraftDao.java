@@ -1,10 +1,12 @@
 package org.example.dao;
 
 import org.example.entity.Aircraft;
+import org.example.entity.Seat;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import java.util.List;
 import java.util.Optional;
 
 public class AircraftDao implements Dao<Long, Aircraft>{
@@ -57,6 +59,16 @@ public class AircraftDao implements Dao<Long, Aircraft>{
             session.update(aircraft);
             session.beginTransaction().commit();
             return true;
+        }
+    }
+
+    @Override
+    public List<Aircraft> findAll() {
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            List<Aircraft> aircrafts = (List<Aircraft>) session.createQuery("From Aircraft ").list();
+            return aircrafts;
         }
     }
 
