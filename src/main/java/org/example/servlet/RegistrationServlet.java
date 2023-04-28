@@ -1,5 +1,6 @@
 package org.example.servlet;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.dto.CreateUserDto;
 import org.example.entity.Gender;
 import org.example.entity.Role;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import static org.example.utils.UrlPath.REGISTRATION;
 
 @WebServlet(REGISTRATION)
+@Slf4j
 public class RegistrationServlet extends HttpServlet {
     private final UserService userService = UserService.getInstance();
 
@@ -41,8 +43,10 @@ public class RegistrationServlet extends HttpServlet {
                 .build();
         try {
             userService.create(userDto);
+            log.info("user: " + userDto + " register");
             resp.sendRedirect("/login");
         } catch (ValidationException exception) {
+            log.error(exception.getErrors().toString());
             req.setAttribute("errors", exception.getErrors());
             doGet(req, resp);
         }

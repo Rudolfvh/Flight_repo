@@ -1,5 +1,6 @@
 package org.example.validator;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.dto.CreateUserDto;
 import org.example.entity.Gender;
 import org.example.entity.Role;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
+@Slf4j
 public class CreateUserValidator implements Validator<CreateUserDto> {
 
     private static final CreateUserValidator INSTANCE = new CreateUserValidator();
@@ -25,6 +27,7 @@ public class CreateUserValidator implements Validator<CreateUserDto> {
         if (Role.find(object.getRole()).isEmpty()) {
             validationResult.add(Error.of("invalid.role", "Role is invalid"));
         }
+        log.error(validationResult.toString());
         return validationResult;
     }
 

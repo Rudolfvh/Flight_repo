@@ -1,5 +1,6 @@
 package org.example.servlet;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.dto.UserDto;
 import org.example.service.UserService;
 import org.example.utils.JspHelper;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import static org.example.utils.UrlPath.LOGIN;
 
 @WebServlet(LOGIN)
+@Slf4j
 public class LoginServlet extends HttpServlet {
 
     private final UserService userService = UserService.getInstance();
@@ -41,6 +43,7 @@ public class LoginServlet extends HttpServlet {
 
     @SneakyThrows
     private void onLoginSuccess(UserDto user, HttpServletRequest req, HttpServletResponse resp) {
+        log.info("user: " +  user + " loging ");
         req.getSession().setAttribute("user", user);
         resp.sendRedirect("/flights");
     }

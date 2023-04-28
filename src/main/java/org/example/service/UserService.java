@@ -1,5 +1,6 @@
 package org.example.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.dao.UserDao;
 import org.example.dto.CreateUserDto;
 import org.example.dto.UserDto;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
+@Slf4j
 public class UserService {
     private static final UserService INSTANCE = new UserService();
 
@@ -30,6 +32,7 @@ public class UserService {
     public Integer create(CreateUserDto userDto) {
         var validationResult = createUserValidator.isValid(userDto);
         if (!validationResult.isValid()) {
+            log.error(validationResult.getErrors().toString());
             throw new ValidationException(validationResult.getErrors());
         }
         var userEntity = createUserMapper.mapFrom(userDto);
