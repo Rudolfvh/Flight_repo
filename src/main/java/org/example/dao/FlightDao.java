@@ -64,6 +64,7 @@ public class FlightDao implements Dao<Long, Flight>{
              Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.delete(session.get(Flight.class,id));
+            session.beginTransaction().commit();
             return true;
         }
     }

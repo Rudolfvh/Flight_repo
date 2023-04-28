@@ -81,6 +81,7 @@ public class TicketDao implements Dao<Long,Ticket>{
              Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.delete(session.get(Ticket.class,id));
+            session.beginTransaction().commit();
             return true;
         }
     }

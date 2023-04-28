@@ -44,6 +44,7 @@ public class SeatDao implements Dao<Long, Seat>{
              Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.delete(session.get(User.class,id));
+            session.beginTransaction().commit();
             return true;
         }
     }

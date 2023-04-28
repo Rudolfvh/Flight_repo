@@ -51,6 +51,7 @@ public class AirportDao implements Dao<String, Airport>{
              Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.delete(session.get(Airport.class,id));
+            session.beginTransaction().commit();
             return true;
         }
     }
