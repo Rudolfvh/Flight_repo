@@ -1,21 +1,14 @@
 package org.example.dao;
 
 import org.example.entity.Aircraft;
-import org.example.entity.Airport;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 public class AircraftDao implements Dao<Long, Aircraft>{
 
     private static final AircraftDao INSTANCE = new AircraftDao();
+    private static final Configuration configuration = new Configuration();
     private static String SAVE_SQL = """
             INSERT INTO aircraft (model)
             values (?)
@@ -43,7 +36,6 @@ public class AircraftDao implements Dao<Long, Aircraft>{
             """;
     @Override
     public boolean delete(Long id) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
@@ -55,7 +47,6 @@ public class AircraftDao implements Dao<Long, Aircraft>{
 
     @Override
     public boolean update(Aircraft aircraft) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
@@ -68,7 +59,6 @@ public class AircraftDao implements Dao<Long, Aircraft>{
 
     @Override
     public Aircraft save(Aircraft aircraft) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {

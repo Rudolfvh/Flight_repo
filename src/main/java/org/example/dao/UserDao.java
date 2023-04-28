@@ -22,6 +22,8 @@ public class UserDao implements Dao<Integer, User> {
 
     private static final UserDao INSTANCE = new UserDao();
 
+    private static final Configuration configuration = new Configuration();
+
     private static final String SAVE_SQL =
             "INSERT INTO users (name, birthday, email, password, role, gender) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -61,7 +63,6 @@ public class UserDao implements Dao<Integer, User> {
     @Override
     @SneakyThrows
     public User save(User entity) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {

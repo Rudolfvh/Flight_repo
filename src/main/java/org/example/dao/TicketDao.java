@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class TicketDao implements Dao<Long,Ticket>{
     private static final TicketDao INSTANCE = new TicketDao();
-
+    private static final Configuration configuration = new Configuration();
     private static String SAVE_SQL = """
             INSERT INTO ticket (passport_no, passenger_name, flight_id, seat_no, cost) 
             VALUES (?, ?, ?, ?, ?)
@@ -64,7 +64,6 @@ public class TicketDao implements Dao<Long,Ticket>{
 
     @Override
     public boolean update(Ticket ticket) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
@@ -77,7 +76,6 @@ public class TicketDao implements Dao<Long,Ticket>{
 
     @Override
     public boolean delete(Long id) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
@@ -89,7 +87,6 @@ public class TicketDao implements Dao<Long,Ticket>{
 
     @Override
     public Ticket save(Ticket ticket) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {

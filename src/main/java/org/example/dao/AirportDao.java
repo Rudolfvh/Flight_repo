@@ -16,6 +16,7 @@ import java.util.Optional;
 public class AirportDao implements Dao<String, Airport>{
 
     private static final AirportDao INSTANCE = new AirportDao();
+    private static final Configuration configuration = new Configuration();
     private static String SAVE_SQL = """
             INSERT INTO airport (code,country,city)
             values (?,?,?)
@@ -45,7 +46,6 @@ public class AirportDao implements Dao<String, Airport>{
             """;
     @Override
     public boolean delete(String id) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
@@ -57,7 +57,6 @@ public class AirportDao implements Dao<String, Airport>{
 
     @Override
     public boolean update(Airport airport) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
@@ -70,7 +69,6 @@ public class AirportDao implements Dao<String, Airport>{
 
     @Override
     public Airport save(Airport airport) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {

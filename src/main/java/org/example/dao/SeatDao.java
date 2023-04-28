@@ -16,6 +16,7 @@ import java.util.Optional;
 public class SeatDao implements Dao<Long, Seat>{
 
     private static final SeatDao INSTANCE = new SeatDao();
+    private static final Configuration configuration = new Configuration();
     private static String SAVE_SQL = """
             INSERT INTO seat (seat_no)
             values (?)
@@ -38,7 +39,6 @@ public class SeatDao implements Dao<Long, Seat>{
 
     @Override
     public boolean delete(Long id) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
@@ -50,7 +50,6 @@ public class SeatDao implements Dao<Long, Seat>{
 
     @Override
     public Seat save(Seat seat) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
@@ -63,7 +62,6 @@ public class SeatDao implements Dao<Long, Seat>{
 
     @Override
     public boolean update(Seat seat) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {

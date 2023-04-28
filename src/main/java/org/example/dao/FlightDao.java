@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public class FlightDao implements Dao<Long, Flight>{
     private static final FlightDao INSTANCE = new FlightDao();
-
+    private static final Configuration configuration = new Configuration();
     private static String SAVE_SQL = """
             INSERT INTO flight (flight_no,departure_date,departure_airport_code,
             arrival_date,arrival_airport_code,aircraft_id,status)
@@ -59,7 +59,6 @@ public class FlightDao implements Dao<Long, Flight>{
 
     @Override
     public boolean delete(Long id) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
@@ -71,7 +70,6 @@ public class FlightDao implements Dao<Long, Flight>{
 
     @Override
     public boolean update(Flight flight) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
@@ -84,7 +82,6 @@ public class FlightDao implements Dao<Long, Flight>{
 
     @Override
     public Flight save(Flight flight) {
-        Configuration configuration = new Configuration();
         configuration.configure();
         try (SessionFactory sessionFactory = configuration.buildSessionFactory();
              Session session = sessionFactory.openSession()) {
