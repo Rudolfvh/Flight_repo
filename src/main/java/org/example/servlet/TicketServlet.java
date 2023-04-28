@@ -1,6 +1,6 @@
 package org.example.servlet;
 
-import by.itacademy.jdbc.starter.service.TicketService;
+import org.example.service.TicketService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

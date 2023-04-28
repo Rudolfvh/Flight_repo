@@ -1,6 +1,6 @@
 package org.example.filter;
 
-import by.itacademy.jdbc.starter.dto.UserDto;
+import org.example.dto.UserDto;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;

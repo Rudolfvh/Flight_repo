@@ -1,5 +1,6 @@
 package org.example.dao;
 
+import org.example.entity.Aircraft;
 import org.example.entity.Seat;
 import org.example.entity.User;
 import org.hibernate.Session;
@@ -72,20 +73,18 @@ public class SeatDao implements Dao<Long, Seat>{
             return true;
         }
     }
-//    @Override
-//    public Optional<Seat> findById(Long id) {
-//        try (var connection = ConnectionManager.get();
-//             var statement = connection.prepareStatement(FIND_BY_ID)) {
-//            Seat seat = null;
-//            statement.setLong(1, id);
-//            var result = statement.executeQuery();
-//            if (result.next())
-//                seat = buildSeat(result);
-//            return Optional.ofNullable(seat);
-//        } catch (SQLException e) {
-//            throw new DaoExeption(e);
-//        }
-//    }
+    @Override
+    public Optional<Seat> findById(Long id) {
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            Seat seat = null;
+            session.beginTransaction();
+            seat = session.get(Seat.class, id);
+            session.beginTransaction().commit();
+            return Optional.ofNullable(seat);
+        }
+    }
 
 //    @Override
 //    public List<Seat> findAll() {

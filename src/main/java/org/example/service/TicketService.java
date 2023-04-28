@@ -1,7 +1,7 @@
 package org.example.service;
 
-import by.itacademy.jdbc.starter.dao.TicketDao;
-import by.itacademy.jdbc.starter.dto.TicketDto;
+import org.example.dao.TicketDao;
+import org.example.dto.TicketDto;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -8,8 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Set;
 
-import static by.itacademy.jdbc.starter.utils.UrlPath.LOGIN;
-import static by.itacademy.jdbc.starter.utils.UrlPath.REGISTRATION;
+import static org.example.utils.UrlPath.LOGIN;
+import static org.example.utils.UrlPath.REGISTRATION;
 
 @WebFilter("/*")
 public class AuthorizationFilter implements Filter {

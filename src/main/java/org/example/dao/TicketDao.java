@@ -98,19 +98,17 @@ public class TicketDao implements Dao<Long,Ticket>{
         }
     }
 
-//    public Optional<Ticket> findById(Long id) {
-//        try (var connection = ConnectionManager.get();
-//             var statement = connection.prepareStatement(FIND_BY_ID)) {
-//            Ticket ticket = null;
-//            statement.setLong(1, id);
-//            var result = statement.executeQuery();
-//            if (result.next())
-//                ticket = buildTicket(result);
-//            return Optional.ofNullable(ticket);
-//        } catch (SQLException e) {
-//            throw new DaoExeption(e);
-//        }
-//    }
+    public Optional<Ticket> findById(Long id) {
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            Ticket ticket = null;
+            session.beginTransaction();
+            session.get(Ticket.class, id);
+            session.beginTransaction().commit();
+            return Optional.ofNullable(ticket);
+        }
+    }
 
 //    private Ticket buildTicket(ResultSet result) throws SQLException {
 //        var flight = new Flight(

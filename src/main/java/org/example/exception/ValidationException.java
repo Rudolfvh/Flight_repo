@@ -1,6 +1,6 @@
 package org.example.exception;
 
-import by.itacademy.jdbc.starter.validator.Error;
+import org.example.validator.Error;
 import lombok.Getter;
 
 import java.util.List;

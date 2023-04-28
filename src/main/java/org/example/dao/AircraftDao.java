@@ -5,6 +5,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import java.util.Optional;
+
 public class AircraftDao implements Dao<Long, Aircraft>{
 
     private static final AircraftDao INSTANCE = new AircraftDao();
@@ -69,21 +71,18 @@ public class AircraftDao implements Dao<Long, Aircraft>{
             return aircraft;
         }
     }
-
-//    @Override
-//    public Optional<Aircraft> findById(Long id) {
-//        try (var connection = ConnectionManager.get();
-//             var statement = connection.prepareStatement(FIND_BY_ID)) {
-//            Aircraft aircraft = null;
-//            statement.setLong(1, id);
-//            var result = statement.executeQuery();
-//            if (result.next())
-//                aircraft = buildAircraft(result);
-//            return Optional.ofNullable(aircraft);
-//        } catch (SQLException e) {
-//            throw new DaoExeption(e);
-//        }
-//    }
+    @Override
+    public Optional<Aircraft> findById(Long id) {
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            Aircraft aircraft = null;
+            session.beginTransaction();
+            aircraft = session.get(Aircraft.class, id);
+            session.beginTransaction().commit();
+            return Optional.ofNullable(aircraft);
+        }
+    }
 //    @Override
 //    public List<Aircraft> findAll() {
 //        try (var connection = ConnectionManager.get();

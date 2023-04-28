@@ -1,5 +1,6 @@
 package org.example.dao;
 
+import org.example.entity.Aircraft;
 import org.example.entity.Flight;
 import org.example.entity.FlightStatus;
 import org.example.entity.User;
@@ -94,20 +95,18 @@ public class FlightDao implements Dao<Long, Flight>{
         }
     }
 
-//    @Override
-//    public Optional<Flight> findById(Long id) {
-//        try (var connection = ConnectionManager.get();
-//             var statement = connection.prepareStatement(FIND_BY_ID)) {
-//            Flight flight = null;
-//            statement.setLong(1, id);
-//            var result = statement.executeQuery();
-//            if (result.next())
-//                flight = buildFlight(result);
-//            return Optional.ofNullable(flight);
-//        } catch (SQLException e) {
-//            throw new DaoExeption(e);
-//        }
-//    }
+    @Override
+    public Optional<Flight> findById(Long id) {
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            Flight flight = null;
+            session.beginTransaction();
+            flight = session.get(Flight.class, id);
+            session.beginTransaction().commit();
+            return Optional.ofNullable(flight);
+        }
+    }
 
 //    @Override
 //    public List<Flight> findAll() {

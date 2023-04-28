@@ -1,7 +1,7 @@
 package org.example.service;
 
-import by.itacademy.jdbc.starter.dao.FlightDao;
-import by.itacademy.jdbc.starter.dto.FlightDto;
+import org.example.dao.FlightDao;
+import org.example.dto.FlightDto;
 
 import java.util.List;
 import java.util.stream.Collectors;

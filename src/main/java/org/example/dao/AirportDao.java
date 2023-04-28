@@ -1,5 +1,6 @@
 package org.example.dao;
 
+import org.example.entity.Aircraft;
 import org.example.entity.Airport;
 import org.example.entity.Ticket;
 import org.hibernate.Session;
@@ -80,20 +81,18 @@ public class AirportDao implements Dao<String, Airport>{
         }
     }
 
-//    @Override
-//    public Optional<Airport> findById(String id) {
-//        try (var connection = ConnectionManager.get();
-//             var statement = connection.prepareStatement(FIND_BY_ID)) {
-//            Airport airport = null;
-//            statement.setString(1, id);
-//            var result = statement.executeQuery();
-//            if (result.next())
-//                airport = buildAirport(result);
-//            return Optional.ofNullable(airport);
-//        } catch (SQLException e) {
-//            throw new DaoExeption(e);
-//        }
-//    }
+    @Override
+    public Optional<Airport> findById(Long id) {
+        configuration.configure();
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+            Airport airport = null;
+            session.beginTransaction();
+            airport = session.get(Airport.class, id);
+            session.beginTransaction().commit();
+            return Optional.ofNullable(airport);
+        }
+    }
 
 //    @Override
 //    public List<Airport> findAll() {
